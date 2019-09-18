@@ -1,99 +1,84 @@
-let clickables = (() => {
-  let clickables = [];
-  // Code to hook the onclick addEventListener function call.
-  Node.prototype.addEventListener = new Proxy(Node.prototype.addEventListener, {
-    apply: (target, thisArg, argumentsList) => {
-      console.log("addEventListener called!", target, thisArg, argumentsList);
-      clickables = [...clickables, thisArg];
-      Reflect.apply(target, thisArg, argumentsList);
-    }
-  });
-
-  // Code to hook the setters of the onclick attribute.
-  HTMLElement.prototype._onclick = () => console.log("default");
-  Object.defineProperty(HTMLElement.prototype, "onclick", {
-    get() {
-      return this._onclick;
-    },
-    set(value) {
-      console.log("setting onclick handler!", this, value);
-      clickables = [...clickables, this];
-      this._onclick = value;
-    }
-  });
-
-  // Code to hook any inline onclick handlers or new nodes with click
-  // handlers added to them.
-  const observerConfig = {
-    attributes: true,
-    childList: true,
-    characterData: true,
-    characterDataOldValue: true,
-    subtree: true
+const clickables = (() => {
+  // domainMatches checks if a string matches the current domain.
+  const domainMatches = href => {
+    return href
+      .toLowerCase()
+      .startsWith(
+        window.location.protocol.toLowerCase() +
+          "//" +
+          window.location.hostname.toLowerCase()
+      );
   };
-  const observer = new MutationObserver(mutations => {
-    mutations.forEach(mutation => {
-      if (mutation.type === "childList") {
-        const added_onclicks = [...mutation.addedNodes]
-          .map(node => {
-            if (node.attributes) {
-              return [...node.attributes];
-            }
-            return [];
-          })
-          .flat()
-          .filter(attr => attr.name === "onclick");
-        if (added_onclicks.length > 0) {
-          console.log("added onclick node!", added_onclicks);
-          clickables = [...clickables, ...added_onclicks];
-        }
+  // getLoadedClickables returns a list of DOM nodes
+  // that have already been loaded into the page and are clickable.
+  // This won't catch things like events registered with event listeners.
+  const getLoadedClickables = () => [
+    ...document.querySelectorAll("input[type='submit']"),
+    ...document.querySelectorAll("button"),
+    ...document.querySelectorAll("[onclick]"),
+    ...[...document.querySelectorAll("a")].filter(node =>
+      domainMatches(node.href)
+    )
+  ];
 
-        mutation.addedNodes.forEach(node => {
-          if (
-            node.nodeType === Node.ELEMENT_NODE &&
-            node.nodeName.toLowerCase() === "a" &&
-            node.href
-              .toLowerCase()
-              .startsWith(
-                window.location.protocol.toLowerCase() +
-                  "//" +
-                  window.location.hostname.toLowerCase()
-              )
-          ) {
-            console.log("added an anchor node!", node);
-            clickables = [...clickables, node];
-          }
-        });
-      }
-      if (mutation.type === "attributes") {
-        const attribute_change_onclicks = [
-          ...mutation.target.attributes
-        ].filter(a => a.name === "onclick");
-        if (attribute_change_onclicks.length > 0) {
-          console.log("modified onclick attribute!", attribute_change_onclicks);
-          clickables = [...clickables, ...attribute_change_onclicks];
+  // hookNewClickables uses a mutation observer to watch for
+  // changes to the DOM that would introduce something that can
+  // be clicked.
+  const hookNewClickables = allClickables => {
+    hookAddClickEventListener(allClickables);
+    hookOnclickProperty(allClickables);
+  };
+
+  // hookExistingClickables looks at the page after it has loaded
+  // and tries to get loaded clickables that might have been missed
+  // by the mutation observer. This will likely create duplicates,
+  // so we may want to get rid of it.
+  const hookExistingClickables = allClickables =>
+    window.addEventListener("load", () => {
+      allClickables.push.apply(
+        allClickables,
+        getLoadedClickables().map(querySelector.fromDOMNode)
+      );
+    });
+
+  // hookAddClickEventListener overrides the Node prototye
+  //`addEventListener`method and stores a reference to the
+  // DOM node.
+  const hookAddClickEventListener = allClickables => {
+    Node.prototype.addEventListener = new Proxy(
+      Node.prototype.addEventListener,
+      {
+        apply: (target, thisArg, argumentsList) => {
+          allClickables.push(querySelector.fromDOMNode(thisArg));
+          Reflect.apply(target, thisArg, argumentsList);
         }
       }
+    );
+  };
 
-      if (mutation.attributeName === "onclick") {
-        console.log("modified onclick attribute!", mutation);
+  // hookOnclickProperty overrides the HTMLElement prototype to add an
+  // onclick property so that we can hook any element that tries to set
+  // the property manually. It stores a reference to the DOM node.
+  const hookOnclickProperty = allClickables => {
+    HTMLElement.prototype._onclick = () => console.log("default");
+    Object.defineProperty(HTMLElement.prototype, "onclick", {
+      get() {
+        return this._onclick;
+      },
+      set(value) {
+        allClickables.push(querySelector.fromDOMNode(this));
+        this._onclick = value;
       }
     });
-  });
-
-  observer.observe(document.documentElement, observerConfig);
-
-  // Code to handle links to the same app. We don't care about links
-  // that take us away from the app.
-
-  return {
-    // Every time we get the clickables, dedupe and remove any DOM
-    // nodes that aren't a part of the page anymore.
-    get: () => {
-      clickables = [...new Set(clickables)].filter(c =>
-        document.body.contains(c)
-      );
-      return clickables;
-    }
   };
+
+  let c = [];
+  hookNewClickables(c);
+  hookExistingClickables(c);
+  setInterval(() => {
+    if (c.length === 0) return;
+    const data = JSON.stringify({ clickables: c });
+    c.length = 0;
+    window.postMessage(data, "*");
+  }, 500);
 })();

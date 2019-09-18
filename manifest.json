@@ -10,7 +10,11 @@
     {
       "matches": ["<all_urls>"],
       "all_frames": true,
-      "js": ["scripts/method_hooking_injector.js"],
+      "js": [
+        "scripts/method_hooking_injector.js",
+        "scripts/clickable_observer.js",
+        "scripts/clickable_driver.js"
+      ],
       "css": [],
       "run_at": "document_start"
     }
