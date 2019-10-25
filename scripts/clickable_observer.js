@@ -84,4 +84,6 @@
       subtree: true
     });
   };
+
+  hookDOM();
 })();

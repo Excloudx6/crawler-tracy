@@ -8,6 +8,6 @@
     document.documentElement.appendChild(hookInjector);
     hookInjector.parentNode.removeChild(hookInjector);
   };
-  const injectionScripts = ["query_selector.js", "clickables.js"]; //, "writeables.js"];
+  const injectionScripts = ["query_selector.js", "clickables.js"];
   injectionScripts.map(injectScript);
 })();

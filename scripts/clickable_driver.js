@@ -29,11 +29,17 @@ const driver = (() => {
   let stop = () => console.log("no timer");
   const start = (strat = strategies.random, interval = 2000) => {
     const timer = setInterval(() => {
+      if (c.length === 0) return;
       const randomNode = window.document.querySelector(
         pickStrategy(strat)(clean(c))
       );
 
-      console.log("[RANDOM NODE] selected this random node: ", randomNode);
+      console.log(
+        "[RANDOM NODE] selected this random node: ",
+        randomNode,
+        clean(c)
+      );
+      randomNode.style.border = "red solid";
       randomNode.click();
     }, interval);
     stop = () => clearInterval(timer);
@@ -55,7 +61,7 @@ const driver = (() => {
       }
     });
   };
-  start();
+  start(strategies.random, 500);
   listenForPageClickables();
   return {
     addClickables: addClickables,

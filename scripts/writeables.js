@@ -1,17 +1,20 @@
 var writeables = (() => {
-  let writeables = [];
-
   const observerConfig = {
-    childList: true
+    childList: true,
+    subtree: true
   };
 
+  const isInputNode = node =>
+    node.nodeName.toLowerCase() === "input" &&
+    node.type.toLowerCase() !== "hidden" &&
+    node.type.toLowerCase() !== "submit";
+  const isTextArea = node => node.nodeName.toLowerCase() === "textarea";
   const observer = new MutationObserver(mutations => {
     mutations.forEach(mutation => {
       if (mutation.type === "childList") {
-        writeables = [
-          ...writeables,
-          ...[...mutation.addedNodes].filter(node => node.nodeName === "input")
-        ];
+        [...mutation.addedNodes]
+          .filter(node => isInputNode(node) || isTextArea(node))
+          .map(node => (node.value = "zzXSSzz"));
       }
     });
   });

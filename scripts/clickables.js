@@ -1,4 +1,4 @@
-const clickables = (() => {
+(() => {
   // domainMatches checks if a string matches the current domain.
   const domainMatches = href => {
     return href
@@ -75,10 +75,12 @@ const clickables = (() => {
   let c = [];
   hookNewClickables(c);
   hookExistingClickables(c);
-  setInterval(() => {
-    if (c.length === 0) return;
-    const data = JSON.stringify({ clickables: c });
-    c.length = 0;
-    window.postMessage(data, "*");
-  }, 500);
+  window.addEventListener("load", () => {
+    setInterval(() => {
+      if (c.length === 0) return;
+      const data = JSON.stringify({ clickables: c });
+      c.length = 0;
+      window.postMessage(data, "*");
+    }, 500);
+  });
 })();

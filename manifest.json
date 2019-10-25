@@ -13,7 +13,8 @@
       "js": [
         "scripts/method_hooking_injector.js",
         "scripts/clickable_observer.js",
-        "scripts/clickable_driver.js"
+        "scripts/clickable_driver.js",
+        "scripts/writeables.js"
       ],
       "css": [],
       "run_at": "document_start"
