@@ -16,11 +16,12 @@ const config = (mode) => {
     devtool: isDevelopment ? "inline-source-map" : false,
     mode: mode,
     entry: {
-      // Your potential entry points
-      writeables: path.join(__dirname, "content-scripts", "writeables", "writeables.js"),
-      clickables: path.join(__dirname, "content-scripts", "clickables", "clickables.js"),
-      crawlerModule: path.join(__dirname, "modules", "crawlerModule.js")
-    },
+        writeables: path.join(__dirname, "content-scripts", "writeables", "writeables.js"),
+        clickables: path.join(__dirname, "content-scripts", "clickables", "clickables.js"),
+        crawlerModule: path.join(__dirname, "modules", "crawlerModule.js"),
+        background: path.join(__dirname, "background", "background.js"),
+        popup: path.join(__dirname, "popup", "popup.js")
+     },
     output: {
       path: path.join(__dirname, "build"),
       filename: "[name].bundle.js"
