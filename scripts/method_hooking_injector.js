@@ -1,5 +1,5 @@
+// scripts/method_hooking_injector.js
 (() => {
-  // injectScript injects the script into the page and then removes it.
   const injectScript = file => {
     const hookInjector = document.createElement("script");
     hookInjector.type = "text/javascript";
@@ -8,6 +8,7 @@
     document.documentElement.appendChild(hookInjector);
     hookInjector.parentNode.removeChild(hookInjector);
   };
-  const injectionScripts = ["query_selector.js", "clickables.js"];
+
+  const injectionScripts = ["query_selector.js", "clickables.js", "clickable_observer.js"];
   injectionScripts.map(injectScript);
 })();

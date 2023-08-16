@@ -4,14 +4,27 @@
   // selector strings. This includes things like inline click handlers via DOM
   // attributes, links, and input fields.
   const hookDOM = () => {
+
+  // domainMatches checks if a string matches the current domain.
+  const domainMatches = href => {
+    return href
+      .toLowerCase()
+      .startsWith(
+        window.location.protocol.toLowerCase() +
+          "//" +
+          window.location.hostname.toLowerCase()
+      );
+  };
     const checkInlineOnclickAttrAdded = node => {
-      const onclickAttrs = [...node.attributes].filter(
+      if (!node.attributes) return;
+      const onclickAttrs = Array.from(node.attributes).filter(
         attr => attr.name === "onclick"
       );
-      if (onclickAttrs.length > 0) {
+            if (onclickAttrs.length > 0) {
         return node;
       }
     };
+    
 
     const checkIsAnchorToSameDomain = node => {
       if (

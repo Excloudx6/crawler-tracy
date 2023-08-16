@@ -1,30 +1,51 @@
 {
-  "name": "Crawler",
+  "name": "Crawler-Tracy",
   "description": "A tool that crawls single-page apps.",
-  "version": "0.1",
-  "permissions": ["<all_urls>"],
+  "version": "0.2",
+  "permissions": ["<all_urls>",  "commands"],
   "background": {
-    "scripts": []
+    "scripts": ["background.js"],
+    "persistent": false
   },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
       "all_frames": true,
       "js": [
-        "scripts/method_hooking_injector.js",
+        "scripts/query_selector.js",
+        "scripts/clickables.js",
         "scripts/clickable_observer.js",
         "scripts/clickable_driver.js",
         "scripts/writeables.js"
       ],
       "css": [],
-      "run_at": "document_start"
+      "run_at": "document_end"
     }
   ],
   "browser_action": {
     "default_title": "Crawler",
     "default_icon": {}
   },
-  "web_accessible_resources": [],
+  "web_accessible_resources": [
+    "scripts/query_selector.js",
+    "scripts/clickables.js"
+  ],
+  "commands": {
+    "pause_crawler": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+P",
+        "mac": "MacCtrl+Shift+P"
+      },
+      "description": "Pause the crawler"
+    },
+    "stop_crawler": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+S",
+        "mac": "MacCtrl+Shift+S"
+      },
+      "description": "Stop the crawler"
+    }
+  },
   "manifest_version": 2,
   "icons": {}
 }

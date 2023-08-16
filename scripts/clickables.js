@@ -1,4 +1,5 @@
 (() => {
+
   // domainMatches checks if a string matches the current domain.
   const domainMatches = href => {
     return href

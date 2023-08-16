@@ -20,11 +20,17 @@ const driver = (() => {
   };
 
   const clean = clickables =>
-    [...new Set(clickables)]
-      .filter(Boolean)
-      .filter(cl =>
-        window.document.body.contains(window.document.querySelector(cl))
-      );
+  [...new Set(clickables)]
+    .filter(Boolean)
+    .filter(cl => {
+      try {
+        return document.querySelector(cl);
+      } catch (e) {
+        console.error("Error querying selector:", cl, e);
+        return false;
+      }
+    });
+
 
   let stop = () => console.log("no timer");
   const start = (strat = strategies.random, interval = 2000) => {
@@ -40,7 +46,13 @@ const driver = (() => {
         clean(c)
       );
       randomNode.style.border = "red solid";
-      randomNode.click();
+      if (randomNode) {
+        console.log("[RANDOM NODE] selected this random node: ", randomNode);
+        randomNode.click();
+      } else {
+        console.log("[RANDOM NODE] No matching node found");
+      }
+      // randomNode.click();
     }, interval);
     stop = () => clearInterval(timer);
   };
