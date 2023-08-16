@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Crawler-Tracy",
   "description": "A tool that crawls single-page apps.",
-  "version": "0.2",
+  "version": "2.0",
   "permissions": ["<all_urls>", "commands"],
   "background": {
     "scripts": ["background/background.js"],
