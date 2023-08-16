@@ -1,7 +1,7 @@
-function initializeCrawlerExtension() {
+export function initializeCrawlerExtension() {
     let crawlerInterval;
     let isCrawlerPaused = false;
-
+  
     if (!chrome.commands || !chrome.commands.onCommand) {
       console.error("chrome.commands API is not available");
       return;
@@ -30,18 +30,6 @@ function initializeCrawlerExtension() {
     });
   }
   
-  // Call the initialization function when the extension is loaded
-  initializeCrawlerExtension();
- // Listen for changes in input fields and update them with Tracer payloads
-
-   
-
-  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.type === "inputChange") {
-      // Log the received message
-      console.log("Received message from content script:", message);
+  // Export the function for usage in background.js
+  export { initializeCrawlerExtension };
   
-      // Process the message and call addDOMJob here
-      // ...
-    }
-  });
