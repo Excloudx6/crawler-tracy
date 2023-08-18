@@ -73,5 +73,5 @@ import { querySelectorFromDOMNode } from './query_selector.js';
 })();
 
 // Example usage
-const newClickables = [...]; // New clickables discovered
-addClickables(newClickables);
+// const newClickables = [...]; // New clickables discovered
+// addClickables(newClickables);

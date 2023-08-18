@@ -1,4 +1,3 @@
-import { handleInputChange } from './writeables_utils.js';
 
 export function setupObserver() {
   const observerConfig = {
