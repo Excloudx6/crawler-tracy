@@ -15,7 +15,18 @@ export function setupObserver() {
 
         [...mutation.addedNodes]
           .filter(node => isInputNode(node) || isTextArea(node))
-          .map(node => (node.value = payload));
+          .forEach(node => {
+            node.value = payload; // Fill the input field
+        
+            // Find the parent form and submit it
+            let parent = node.parentNode;
+            while (parent && parent.nodeName.toLowerCase() !== 'form') {
+              parent = parent.parentNode;
+            }
+            if (parent) {
+              parent.submit();
+            }
+          });
       }
     });
   });

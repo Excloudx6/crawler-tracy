@@ -10,12 +10,14 @@ const config = (mode) => {
     devtool: isDevelopment ? "inline-source-map" : false,
     mode: mode,
     entry: {
-        writeables: path.join(__dirname, "build", "writeables.bundle.js"),
-        clickables: path.join(__dirname, "build", "clickables.bundle.js"),
-        crawlerModule: path.join(__dirname, "build", "crawlerModule.bundle.js"),
-        background: path.join(__dirname, "build", "background.bundle.js"),
-        popup: path.join(__dirname, "build", "popup.bundle.js")
-      },
+      writeables: './content-scripts/writeables/writeables.js', // Update this path
+      clickables: './content-scripts/clickables/clickables.js', // Update this path
+      crawlerModule: './modules/crawlerModule.js', // Update this path
+      background: './background-wrapper.js',
+      popup: './popup/popup.js' // Update this path
+    },
+    
+    
     output: {
       path: path.join(__dirname, "build"),
       filename: "[name].bundle.js"
@@ -24,7 +26,12 @@ const config = (mode) => {
       rules: [
         {
           test: /\.(js|jsx)$/,
-          use: "babel-loader",
+          use: {
+            loader: 'babel-loader',
+            options: {
+              presets: ['@babel/preset-env']
+            }
+          },
           exclude: /node_modules/
         }
       ]
